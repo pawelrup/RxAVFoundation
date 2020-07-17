@@ -41,16 +41,18 @@ private class RxAVPlayerItemVideoOutputDelegateProxy: DelegateProxy<AVPlayerItem
 extension Reactive where Base: AVPlayerItemVideoOutput {
 
 	public var delegate: DelegateProxy<AVPlayerItemVideoOutput, AVPlayerItemOutputPullDelegate> {
-		return RxAVPlayerItemVideoOutputDelegateProxy.proxy(for: base)
+		RxAVPlayerItemVideoOutputDelegateProxy.proxy(for: base)
 	}
 
 	public var outputMediaDataWillChange: Observable<Void> {
-		return delegate.methodInvoked(#selector(AVPlayerItemOutputPullDelegate.outputMediaDataWillChange(_:)))
+		delegate
+			.methodInvoked(#selector(AVPlayerItemOutputPullDelegate.outputMediaDataWillChange(_:)))
 			.map { _ in () }
 	}
 
 	public var outputSequenceWasFlushed: Observable<Void> {
-		return delegate.methodInvoked(#selector(AVPlayerItemOutputPullDelegate.outputSequenceWasFlushed(_:)))
+		delegate
+			.methodInvoked(#selector(AVPlayerItemOutputPullDelegate.outputSequenceWasFlushed(_:)))
 			.map { _ in () }
 	}
 }

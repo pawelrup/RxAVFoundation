@@ -16,8 +16,8 @@ extension Reactive where Base: AVSampleBufferDisplayLayer {
 	/// Removes a renderer from the synchronizer.
 	/// - Parameter queue: The time on the timebase's timeline at which the renderer should be removed. If the time is in the past, the renderer is immediately removed..
 	public func requestMediaDataWhenReady(on queue: DispatchQueue) -> Single<Void> {
-		return Single.create { event -> Disposable in
-			self.base.requestMediaDataWhenReady(on: queue) {
+		Single.create { event in
+			base.requestMediaDataWhenReady(on: queue) {
 				event(.success(()))
 			}
 			return Disposables.create()

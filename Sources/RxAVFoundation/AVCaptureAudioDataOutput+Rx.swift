@@ -14,7 +14,7 @@ extension AVCaptureAudioDataOutput: HasDelegate {
 
 	public var delegate: Delegate? {
 		get {
-			return sampleBufferDelegate
+			sampleBufferDelegate
 		}
 		set(newValue) {
 			setSampleBufferDelegate(newValue, queue: .main)
@@ -41,12 +41,13 @@ private class RxAVCaptureAudioDataOutputDelegateProxy: DelegateProxy<AVCaptureAu
 extension Reactive where Base: AVCaptureAudioDataOutput {
 
 	public var delegate: DelegateProxy<AVCaptureAudioDataOutput, AVCaptureAudioDataOutputSampleBufferDelegate> {
-		return RxAVCaptureAudioDataOutputDelegateProxy.proxy(for: base)
+		RxAVCaptureAudioDataOutputDelegateProxy.proxy(for: base)
 	}
 
 	/// Notifies that a sample buffer was written.
 	public var didOutputFromConnection: Observable<(CMSampleBuffer, AVCaptureConnection)> {
-		return delegate.methodInvoked(#selector(AVCaptureAudioDataOutputSampleBufferDelegate.captureOutput(_:didOutput:from:)))
+		delegate
+			.methodInvoked(#selector(AVCaptureAudioDataOutputSampleBufferDelegate.captureOutput(_:didOutput:from:)))
 			.map { ($0[1] as! CMSampleBuffer, $0[2] as! AVCaptureConnection) }
 	}
 }

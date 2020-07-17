@@ -41,18 +41,20 @@ private class RxAVCaptureVideoDataOutputDelegateProxy: DelegateProxy<AVCaptureVi
 extension Reactive where Base: AVCaptureVideoDataOutput {
 
 	public var delegate: DelegateProxy<AVCaptureVideoDataOutput, AVCaptureVideoDataOutputSampleBufferDelegate> {
-		return RxAVCaptureVideoDataOutputDelegateProxy.proxy(for: base)
+		RxAVCaptureVideoDataOutputDelegateProxy.proxy(for: base)
 	}
 
 	/// Notifies the delegate that a new video frame was written.
 	public var didOutputSampleBuffer: Observable<(CMSampleBuffer, AVCaptureConnection)> {
-		return delegate.methodInvoked(#selector(AVCaptureVideoDataOutputSampleBufferDelegate.captureOutput(_:didOutput:from:)))
+		delegate
+			.methodInvoked(#selector(AVCaptureVideoDataOutputSampleBufferDelegate.captureOutput(_:didOutput:from:)))
 			.map { ($0[1] as! CMSampleBuffer, $0[2] as! AVCaptureConnection) }
 	}
 
 	/// Notifies the delegate that a video frame was discarded.
 	public var didDropSampleBuffer: Observable<(CMSampleBuffer, AVCaptureConnection)> {
-		return delegate.methodInvoked(#selector(AVCaptureVideoDataOutputSampleBufferDelegate.captureOutput(_:didDrop:from:)))
+		delegate
+			.methodInvoked(#selector(AVCaptureVideoDataOutputSampleBufferDelegate.captureOutput(_:didDrop:from:)))
 			.map { ($0[1] as! CMSampleBuffer, $0[2] as! AVCaptureConnection) }
 	}
 }

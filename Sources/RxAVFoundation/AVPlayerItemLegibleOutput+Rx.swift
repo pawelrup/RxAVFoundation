@@ -41,11 +41,12 @@ private class RxAVPlayerItemLegibleOutputDelegateProxy: DelegateProxy<AVPlayerIt
 extension Reactive where Base: AVPlayerItemLegibleOutput {
 
 	public var delegate: DelegateProxy<AVPlayerItemLegibleOutput, AVPlayerItemLegibleOutputPushDelegate> {
-		return RxAVPlayerItemLegibleOutputDelegateProxy.proxy(for: base)
+		RxAVPlayerItemLegibleOutputDelegateProxy.proxy(for: base)
 	}
 
 	public var didOutput: Observable<([NSAttributedString], [Any], CMTime)> {
-		return delegate.methodInvoked(#selector(AVPlayerItemLegibleOutputPushDelegate.legibleOutput(_:didOutputAttributedStrings:nativeSampleBuffers:forItemTime:)))
+		delegate
+			.methodInvoked(#selector(AVPlayerItemLegibleOutputPushDelegate.legibleOutput(_:didOutputAttributedStrings:nativeSampleBuffers:forItemTime:)))
 			.map { ($0[1] as! [NSAttributedString], $0[2] as! [Any], $0[3] as! CMTime) }
 	}
 }

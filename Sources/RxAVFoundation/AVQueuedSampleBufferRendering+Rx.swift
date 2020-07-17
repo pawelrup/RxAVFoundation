@@ -15,8 +15,8 @@ extension Reactive where Base: AVQueuedSampleBufferRendering {
 	/// Tells the target to invoke a client-supplied block in order to gather sample buffers for playback.
 	/// - Parameter queue: The dispatch queue.
 	public func requestMediaDataWhenReady(on queue: DispatchQueue) -> Single<Void> {
-		return Single.create { event -> Disposable in
-			self.base.requestMediaDataWhenReady(on: queue) {
+		Single.create { event in
+			base.requestMediaDataWhenReady(on: queue) {
 				event(.success(()))
 			}
 			return Disposables.create()

@@ -15,31 +15,31 @@ extension Reactive where Base: AVPlayer {
 	// MARK: - Observed properties
 
 	public var rate: Observable<Float> {
-		return observe(Float.self, #keyPath(AVPlayer.rate))
+		observe(Float.self, #keyPath(AVPlayer.rate))
 			.map { $0 ?? 0 }
 	}
 
 	public var currentItem: Observable<AVPlayerItem?> {
-		return observe(AVPlayerItem.self, #keyPath(AVPlayer.currentItem))
+		observe(AVPlayerItem.self, #keyPath(AVPlayer.currentItem))
 	}
 
 	public var status: Observable<AVPlayer.Status> {
-		return observe(AVPlayer.Status.self, #keyPath(AVPlayer.status))
+		observe(AVPlayer.Status.self, #keyPath(AVPlayer.status))
 			.map { $0 ?? .unknown }
 	}
 
 	public var error: Observable<NSError?> {
-		return observe(NSError.self, #keyPath(AVPlayer.error))
+		observe(NSError.self, #keyPath(AVPlayer.error))
 	}
 
 	@available(iOS 10.0, tvOS 10.0, *)
 	public var reasonForWaitingToPlay: Observable<AVPlayer.WaitingReason?> {
-		return observe(AVPlayer.WaitingReason.self, #keyPath(AVPlayer.reasonForWaitingToPlay))
+		observe(AVPlayer.WaitingReason.self, #keyPath(AVPlayer.reasonForWaitingToPlay))
 	}
 
 	@available(iOS 10.0, tvOS 10.0, macOS 10.12, *)
 	public var timeControlStatus: Observable<AVPlayer.TimeControlStatus> {
-		return observe(AVPlayer.TimeControlStatus.self, #keyPath(AVPlayer.timeControlStatus))
+		observe(AVPlayer.TimeControlStatus.self, #keyPath(AVPlayer.timeControlStatus))
 			.map { $0 ?? .waitingToPlayAtSpecifiedRate }
 	}
 
@@ -48,8 +48,8 @@ extension Reactive where Base: AVPlayer {
 	/// Sets the current playback time to the specified time and executes the specified block when the seek operation completes or is interrupted.
 	/// - Parameter date: The time to which to seek.
 	public func seek(to date: Date) -> Single<Bool> {
-		return Single.create { event -> Disposable in
-			self.base.seek(to: date) { finished in
+		Single.create { event in
+			base.seek(to: date) { finished in
 				event(.success(finished))
 			}
 			return Disposables.create()
@@ -59,8 +59,8 @@ extension Reactive where Base: AVPlayer {
 	/// Sets the current playback time to the specified time and executes the specified block when the seek operation completes or is interrupted.
 	/// - Parameter time: The time to which to seek.
 	public func seek(to time: CMTime) -> Single<Bool> {
-		return Single.create { event -> Disposable in
-			self.base.seek(to: time) { finished in
+		Single.create { event in
+			base.seek(to: time) { finished in
 				event(.success(finished))
 			}
 			return Disposables.create()
@@ -74,8 +74,8 @@ extension Reactive where Base: AVPlayer {
 	/// - Parameter toleranceAfter: The temporal tolerance after time.
 	///		Pass zero to request sample accurate seeking (this may incur additional decoding delay).
 	public func seek(to time: CMTime, toleranceBefore: CMTime, toleranceAfter: CMTime) -> Single<Bool> {
-		return Single.create { event -> Disposable in
-			self.base.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter) { finished in
+		Single.create { event in
+			base.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter) { finished in
 				event(.success(finished))
 			}
 			return Disposables.create()
@@ -85,8 +85,8 @@ extension Reactive where Base: AVPlayer {
 	/// Begins loading media data to prime the media pipelines for playback.
 	/// - Parameter rate: The playback rate to use when determining how much data to load.
 	public func preroll(atRate rate: Float) -> Single<Bool> {
-		return Single.create { event -> Disposable in
-			self.base.preroll(atRate: rate) { finished in
+		Single.create { event in
+			base.preroll(atRate: rate) { finished in
 				event(.success(finished))
 			}
 			return Disposables.create()
@@ -97,13 +97,12 @@ extension Reactive where Base: AVPlayer {
 	/// - Parameter interval: The time interval at which the block should be invoked during normal playback, according to progress of the player’s current time.
 	/// - Parameter queue: A serial dispatch queue onto which block should be enqueued. Passing a concurrent queue is not supported and will result in undefined behavior.
 	public func periodicTimeObserver(interval: CMTime, queue: DispatchQueue? = nil) -> Observable<CMTime> {
-		return Observable.create { observer in
-			let timeObserver = self.base.addPeriodicTimeObserver(forInterval: interval, queue: queue) { time in
+		Observable.create { observer in
+			let timeObserver = base.addPeriodicTimeObserver(forInterval: interval, queue: queue) { time in
 				observer.onNext(time)
 			}
 
-			return Disposables.create { self.base.removeTimeObserver(timeObserver)
-			}
+			return Disposables.create { base.removeTimeObserver(timeObserver) }
 		}
 	}
 
@@ -111,14 +110,13 @@ extension Reactive where Base: AVPlayer {
 	/// - Parameter times: An array of NSValue objects containing CMTime values representing the times at which to invoke block.
 	/// - Parameter queue: A serial queue onto which block should be enqueued. Passing a concurrent queue is not supported and will result in undefined behavior.
 	public func boundaryTimeObserver(times: [CMTime], queue: DispatchQueue? = nil) -> Observable<Void> {
-		return Observable.create { observer in
+		Observable.create { observer in
 			let timeValues = times.map { NSValue(time: $0) }
-			let timeObserver = self.base.addBoundaryTimeObserver(forTimes: timeValues, queue: queue) {
+			let timeObserver = base.addBoundaryTimeObserver(forTimes: timeValues, queue: queue) {
 				observer.onNext(())
 			}
 
-			return Disposables.create { self.base.removeTimeObserver(timeObserver)
-			}
+			return Disposables.create { base.removeTimeObserver(timeObserver) }
 		}
 	}
 }

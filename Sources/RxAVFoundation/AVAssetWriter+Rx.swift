@@ -14,8 +14,8 @@ extension Reactive where Base: AVAssetWriter {
 
 	/// Marks all unfinished inputs as finished and completes the writing of the output file.
 	public func finishWriting() -> Single<Void> {
-		return Single.create { event -> Disposable in
-			self.base.finishWriting {
+		Single.create { event in
+			base.finishWriting {
 				event(.success(()))
 			}
 			return Disposables.create()

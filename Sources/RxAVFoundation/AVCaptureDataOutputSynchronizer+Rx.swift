@@ -15,7 +15,7 @@ extension AVCaptureDataOutputSynchronizer: HasDelegate {
 
 	public var delegate: Delegate? {
 		get {
-			return value(forKey: "delegate") as? Delegate
+			value(forKey: "delegate") as? Delegate
 		}
 		set(newValue) {
 			setDelegate(newValue, queue: .main)
@@ -53,11 +53,11 @@ private class RxAVCaptureDataOutputSynchronizerDelegateProxy: DelegateProxy<AVCa
 extension Reactive where Base: AVCaptureDataOutputSynchronizer {
 
 	public var delegate: DelegateProxy<AVCaptureDataOutputSynchronizer, AVCaptureDataOutputSynchronizerDelegate> {
-		return RxAVCaptureDataOutputSynchronizerDelegateProxy.proxy(for: base)
+		RxAVCaptureDataOutputSynchronizerDelegateProxy.proxy(for: base)
 	}
 
 	public var shouldWaitForResponseToAuthenticationChallenge: Observable<AVCaptureSynchronizedDataCollection> {
-		return (delegate as! RxAVCaptureDataOutputSynchronizerDelegateProxy).shouldWaitForResponseToAuthenticationChallenge
+		(delegate as! RxAVCaptureDataOutputSynchronizerDelegateProxy).shouldWaitForResponseToAuthenticationChallenge
 	}
 }
 #endif

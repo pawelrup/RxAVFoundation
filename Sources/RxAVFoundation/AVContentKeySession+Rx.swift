@@ -60,7 +60,7 @@ private class RxAVContentKeySessionDelegateProxy: DelegateProxy<AVContentKeySess
 extension Reactive where Base: AVContentKeySession {
 
 	public var delegate: DelegateProxy<AVContentKeySession, AVContentKeySessionDelegate> {
-		return RxAVContentKeySessionDelegateProxy.proxy(for: base)
+		RxAVContentKeySessionDelegateProxy.proxy(for: base)
 	}
 
 	// MARK: - Functions
@@ -70,8 +70,8 @@ extension Reactive where Base: AVContentKeySession {
 	/// - Parameter persistableContentKeyData: The previously created persistable content key data.
 	@available(iOS 11.0, macOS 10.15, *)
 	public func makeSecureTokenForExpirationDate(ofPersistableContentKey persistableContentKeyData: Data) -> Single<Data> {
-		return Single.create { event -> Disposable in
-			self.base.makeSecureTokenForExpirationDate(ofPersistableContentKey: persistableContentKeyData) { (token, error) in
+		Single.create { event in
+			base.makeSecureTokenForExpirationDate(ofPersistableContentKey: persistableContentKeyData) { token, error in
 				if let error = error {
 					event(.error(error))
 				} else {
@@ -87,8 +87,8 @@ extension Reactive where Base: AVContentKeySession {
 	/// - Parameter options: Additional information necessary to generate the server playback context, or nil if none. See AVContentKeySessionServerPlaybackContextOption for supported options.
 	@available(iOS 12.2, macOS 10.15, *)
 	public func invalidatePersistableContentKey(_ persistableContentKeyData: Data, options: [AVContentKeySessionServerPlaybackContextOption : Any]? = nil) -> Single<Data> {
-		return Single.create { event -> Disposable in
-			self.base.invalidatePersistableContentKey(persistableContentKeyData, options: options) { (token, error) in
+		Single.create { event in
+			base.invalidatePersistableContentKey(persistableContentKeyData, options: options) { token, error in
 				if let error = error {
 					event(.error(error))
 				} else {
@@ -104,8 +104,8 @@ extension Reactive where Base: AVContentKeySession {
 	/// - Parameter options: Additional information necessary to generate the server playback context, or nil if none. See AVContentKeySessionServerPlaybackContextOption for supported options.
 	@available(iOS 12.2, macOS 10.15, *)
 	public func invalidateAllPersistableContentKeys(forApp appIdentifier: Data, options: [AVContentKeySessionServerPlaybackContextOption : Any]? = nil) -> Single<Data> {
-		return Single.create { event -> Disposable in
-			self.base.invalidateAllPersistableContentKeys(forApp: appIdentifier, options: options) { (token, error) in
+		Single.create { event in
+			base.invalidateAllPersistableContentKeys(forApp: appIdentifier, options: options) { token, error in
 				if let error = error {
 					event(.error(error))
 				} else {
@@ -121,33 +121,36 @@ extension Reactive where Base: AVContentKeySession {
 
 	/// Provides the receiver with a new content key request object.
 	public var didProvideKeyRequest: Observable<AVContentKeyRequest> {
-		return (delegate as! RxAVContentKeySessionDelegateProxy).didProvideKeyRequest
+		(delegate as! RxAVContentKeySessionDelegateProxy).didProvideKeyRequest
 	}
 
 	/// Provides the receiver with a new content key request object for the renewal of an existing content key.
 	public var didProvideRenewingContentKeyRequest: Observable<AVContentKeyRequest> {
-		return delegate.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySession(_:didProvideRenewingContentKeyRequest:)))
-			.map { $0[1] as! AVContentKeyRequest }
+		delegate
+			.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySession(_:didProvideRenewingContentKeyRequest:)))
+			.compactMap { $0[1] as? AVContentKeyRequest }
 	}
 
 	/// Provides the receiver with a new content key request object to process a persistable content key.
 	@available(macOS 10.15, *)
 	public var didProvidePersistableKeyRequest: Observable<AVPersistableContentKeyRequest> {
-		return (delegate as! RxAVContentKeySessionDelegateProxy).didProvidePersistableKeyRequest
+		(delegate as! RxAVContentKeySessionDelegateProxy).didProvidePersistableKeyRequest
 	}
 
 	#if os(iOS) || os(watchOS) || os(macOS)
 	/// Provides the receiver with an updated persistable content key for a specific key request.
 	@available(iOS 11.0, *)
 	public var didUpdatePersistableContentKeyForContentKeyIdentifier: Observable<(Data, Any)> {
-		return delegate.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySession(_:didUpdatePersistableContentKey:forContentKeyIdentifier:)))
+		delegate
+			.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySession(_:didUpdatePersistableContentKey:forContentKeyIdentifier:)))
 			.map { ($0[1] as! Data, $0[2]) }
 	}
 	#endif
 
 	/// Tells the receiver that the content key request failed.
 	public var contentKeyRequestDidFailWithError: Observable<(AVContentKeyRequest, Error)> {
-		return delegate.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySession(_:contentKeyRequest:didFailWithError:)))
+		delegate
+			.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySession(_:contentKeyRequest:didFailWithError:)))
 			.map { ($0[1] as! AVContentKeyRequest, $0[2] as! Error) }
 	}
 
@@ -155,14 +158,16 @@ extension Reactive where Base: AVContentKeySession {
 	/// Tells the content key session that the response to a content key requeset was successfully processed.
 	@available(iOS 12.0, *)
 	public var contentKeyRequestDidSucceed: Observable<AVContentKeyRequest> {
-		return delegate.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySession(_:contentKeyRequestDidSucceed:)))
-			.map { $0[1] as! AVContentKeyRequest }
+		delegate
+			.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySession(_:contentKeyRequestDidSucceed:)))
+			.compactMap { $0[1] as? AVContentKeyRequest }
 	}
 	#endif
 
 	/// Tells the receiver the content protection session identifier changed.
 	public var contentKeySessionContentProtectionSessionIdentifierDidChange: Observable<Void> {
-		return delegate.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySessionContentProtectionSessionIdentifierDidChange(_:)))
+		delegate
+			.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySessionContentProtectionSessionIdentifierDidChange(_:)))
 			.map { _ in () }
 	}
 
@@ -170,7 +175,8 @@ extension Reactive where Base: AVContentKeySession {
 	/// Notifies the sender that an expired session report has been generated.
 	@available(iOS 12.0, *)
 	public var contentKeySessionDidGenerateExpiredSessionReport: Observable<Void> {
-		return delegate.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySessionDidGenerateExpiredSessionReport(_:)))
+		delegate
+			.methodInvoked(#selector(AVContentKeySessionDelegate.contentKeySessionDidGenerateExpiredSessionReport(_:)))
 			.map { _ in () }
 	}
 	#endif
@@ -184,8 +190,8 @@ extension Reactive where Base: AVContentKeyRequest {
 	/// - Parameter contentIdentifier: An opaque identifier for the content.
 	/// - Parameter options: A dictionary containing any additional information required to obtain the key. The value of this parameter is nil when no additional information is required.
 	public func makeStreamingContentKeyRequestData(forApp appIdentifier: Data, contentIdentifier: Data?, options: [String : Any]? = nil) -> Single<Data> {
-		return Single.create { event -> Disposable in
-			self.base.makeStreamingContentKeyRequestData(forApp: appIdentifier, contentIdentifier: contentIdentifier, options: options) { (token, error) in
+		Single.create { event in
+			base.makeStreamingContentKeyRequestData(forApp: appIdentifier, contentIdentifier: contentIdentifier, options: options) { token, error in
 				if let error = error {
 					event(.error(error))
 				} else {

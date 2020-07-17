@@ -15,8 +15,8 @@ extension Reactive where Base: AVSampleBufferGenerator {
 	/// Notifies the sample buffer generator when data is ready for the sample buffer reference or an error has occurred.
 	/// - Parameter sbuf: The CMSampleBufferRef.
 	public static func notifyOfDataReady(for sbuf: CMSampleBuffer) -> Single<Void> {
-		return Single.create { event -> Disposable in
-			AVSampleBufferGenerator.notifyOfDataReady(for: sbuf) { (dataReady, error) in
+		Single.create { event in
+			AVSampleBufferGenerator.notifyOfDataReady(for: sbuf) { dataReady, error in
 				if dataReady {
 					event(.success(()))
 				} else {

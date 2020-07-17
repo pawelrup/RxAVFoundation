@@ -17,8 +17,8 @@ extension Reactive where Base: AVCapturePhotoOutput {
 	/// Tells the photo capture output to prepare resources for future capture requests with the specified settings.
 	/// - Parameter preparedPhotoSettingsArray: An array of photo capture settings objects indicating the types of capture for which the photo output should prepare resources.
 	public func setPreparedPhotoSettingsArray(_ preparedPhotoSettingsArray: [AVCapturePhotoSettings]) -> Single<Bool> {
-		return Single.create { event -> Disposable in
-			self.base.setPreparedPhotoSettingsArray(preparedPhotoSettingsArray) { (finished, error) in
+		Single.create { event in
+			base.setPreparedPhotoSettingsArray(preparedPhotoSettingsArray) { finished, error in
 				if let error = error {
 					event(.error(error))
 				} else {

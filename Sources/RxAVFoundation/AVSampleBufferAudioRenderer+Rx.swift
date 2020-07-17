@@ -15,8 +15,8 @@ extension Reactive where Base: AVSampleBufferAudioRenderer {
 	/// Flushes queued sample buffers with presentation time stamps later than or equal to the specified time.
 	/// - Parameter time: The time used to flush all later sample buffers.
 	public func flush(fromSourceTime time: CMTime) -> Single<Bool> {
-		return Single.create { event -> Disposable in
-			self.base.flush(fromSourceTime: time) { (flushSucceeded) in
+		Single.create { event in
+			base.flush(fromSourceTime: time) { (flushSucceeded) in
 				event(.success(flushSucceeded))
 			}
 			return Disposables.create()

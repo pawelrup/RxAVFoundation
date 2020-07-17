@@ -17,8 +17,8 @@ extension Reactive where Base: AVCaptureDevice {
 	/// - Parameter duration: The exposure duration.
 	/// - Parameter ISO: The exposure ISO value.
 	public func setExposureModeCustom(duration: CMTime, iso ISO: Float) -> Single<CMTime> {
-		return Single.create { event -> Disposable in
-			self.base.setExposureModeCustom(duration: duration, iso: ISO) { (timestamp) in
+		Single.create { event in
+			base.setExposureModeCustom(duration: duration, iso: ISO) { timestamp in
 				event(.success(timestamp))
 			}
 			return Disposables.create()
@@ -28,8 +28,8 @@ extension Reactive where Base: AVCaptureDevice {
 	/// Sets the bias to be applied to the target exposure value.
 	/// - Parameter bias: The bias to be applied to the exposure target value.
 	public func setExposureTargetBias(_ bias: Float) -> Single<CMTime> {
-		return Single.create { event -> Disposable in
-			self.base.setExposureTargetBias(bias) { (timestamp) in
+		Single.create { event in
+			base.setExposureTargetBias(bias) { (timestamp) in
 				event(.success(timestamp))
 			}
 			return Disposables.create()
@@ -39,8 +39,8 @@ extension Reactive where Base: AVCaptureDevice {
 	/// Sets white balance to locked mode with the specified deviceWhiteBalanceGains values.
 	/// - Parameter whiteBalanceGains: The white balance gains to set.
 	public func setWhiteBalanceModeLocked(with whiteBalanceGains: AVCaptureDevice.WhiteBalanceGains) -> Single<CMTime> {
-		return Single.create { event -> Disposable in
-			self.base.setWhiteBalanceModeLocked(with: whiteBalanceGains) { (timestamp) in
+		Single.create { event in
+			base.setWhiteBalanceModeLocked(with: whiteBalanceGains) { (timestamp) in
 				event(.success(timestamp))
 			}
 			return Disposables.create()
@@ -52,7 +52,7 @@ extension Reactive where Base: AVCaptureDevice {
 	/// - Parameter mediaType: A media type constant, either video or audio.
 	@available(macOS 10.14, *)
 	public static func requestAccess(for mediaType: AVMediaType) -> Single<Bool> {
-		return Single.create { event -> Disposable in
+		Single.create { event in
 			AVCaptureDevice.requestAccess(for: mediaType) { (granted) in
 				event(.success(granted))
 			}

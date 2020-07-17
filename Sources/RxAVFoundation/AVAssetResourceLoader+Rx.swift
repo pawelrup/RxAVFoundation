@@ -57,24 +57,25 @@ private class RxAVAssetResourceLoaderDelegateProxy: DelegateProxy<AVAssetResourc
 extension Reactive where Base: AVAssetResourceLoader {
 
 	public var delegate: DelegateProxy<AVAssetResourceLoader, AVAssetResourceLoaderDelegate> {
-		return RxAVAssetResourceLoaderDelegateProxy.proxy(for: base)
+		RxAVAssetResourceLoaderDelegateProxy.proxy(for: base)
 	}
 
 	/// Informs that a prior loading request has been cancelled.
 	var didCancelLoadingRequest: Observable<AVAssetResourceLoadingRequest> {
-		return (delegate as! RxAVAssetResourceLoaderDelegateProxy).didCancelLoadingRequest
+		(delegate as! RxAVAssetResourceLoaderDelegateProxy).didCancelLoadingRequest
 	}
 
 	/// Tells that assistance is required of the application to respond to an authentication challenge.
 	@available(iOS 9.0, *)
 	public var shouldWaitForResponseToAuthenticationChallenge: Observable<URLAuthenticationChallenge> {
-		return delegate.methodInvoked(#selector(AVAssetResourceLoaderDelegate.resourceLoader(_:shouldWaitForResponseTo:)))
-			.map { $0[1] as! URLAuthenticationChallenge }
+		delegate
+			.methodInvoked(#selector(AVAssetResourceLoaderDelegate.resourceLoader(_:shouldWaitForResponseTo:)))
+			.compactMap { $0[1] as? URLAuthenticationChallenge }
 	}
 
 	/// Informs that a prior authentication challenge has been cancelled.
 	var didCancelAuthenticationChallenge: Observable<URLAuthenticationChallenge> {
-		return (delegate as! RxAVAssetResourceLoaderDelegateProxy).didCancelAuthenticationChallenge
+		(delegate as! RxAVAssetResourceLoaderDelegateProxy).didCancelAuthenticationChallenge
 	}
 }
 #endif

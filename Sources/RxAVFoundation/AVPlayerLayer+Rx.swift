@@ -15,7 +15,7 @@ extension Reactive where Base: AVPlayerLayer {
 
 	/// A Boolean value that indicates whether the first video frame has been made ready for display for the current item of the associated player.
 	public var readyForDisplay: Observable<Bool> {
-		return observe(Bool.self, #keyPath(AVPlayerLayer.readyForDisplay))
+		observe(Bool.self, #keyPath(AVPlayerLayer.readyForDisplay))
 			.map { $0 ?? false }
 	}
 }

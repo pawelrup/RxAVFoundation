@@ -15,8 +15,8 @@ extension Reactive where Base: AVCaptureStillImageOutput {
 	/// Initiates a still image capture and returns immediately.
 	/// - Parameter connection: The connection from which to capture the image.
 	public func captureStillImageAsynchronously(from connection: AVCaptureConnection) -> Single<CMSampleBuffer?> {
-		return Single.create { event -> Disposable in
-			self.base.captureStillImageAsynchronously(from: connection) { (sampleBuffer, error) in
+		Single.create { event in
+			base.captureStillImageAsynchronously(from: connection) { (sampleBuffer, error) in
 				if let error = error {
 					event(.error(error))
 				} else {
@@ -33,8 +33,8 @@ extension Reactive where Base: AVCaptureStillImageOutput {
 	/// - Parameter settings: An array of AVCaptureBracketedStillImageSettings objects. All the array items must be of the same AVCaptureBracketedStillImageSettings subclass, or an invalidArgumentException exception is thrown.
 	@available(iOS, introduced: 8.0, deprecated: 10.0, message: "Use AVCapturePhotoOutput setPreparedPhotoSettingsArray:completionHandler: instead.")
 	public func prepareToCaptureStillImageBracket(from connection: AVCaptureConnection, withSettingsArray settings: [AVCaptureBracketedStillImageSettings]) -> Single<Bool> {
-		return Single.create { event -> Disposable in
-			self.base.prepareToCaptureStillImageBracket(from: connection, withSettingsArray: settings) { (prepared, error) in
+		Single.create { event in
+			base.prepareToCaptureStillImageBracket(from: connection, withSettingsArray: settings) { prepared, error in
 				if let error = error {
 					event(.error(error))
 				} else {
@@ -50,8 +50,8 @@ extension Reactive where Base: AVCaptureStillImageOutput {
 	/// - Parameter settings: An array of AVCaptureBracketedStillImageSettings objects. All the array items must be of the same AVCaptureBracketedStillImageSettings subclass, or an invalidArgumentException exception is thrown.
 	@available(iOS, introduced: 8.0, deprecated: 10.0, message: "Use AVCapturePhotoOutput capturePhotoWithSettings:delegate: instead.")
 	public func captureStillImageBracketAsynchronously(from connection: AVCaptureConnection, withSettingsArray settings: [AVCaptureBracketedStillImageSettings]) -> Single<(CMSampleBuffer?, AVCaptureBracketedStillImageSettings?)> {
-		return Single.create { event -> Disposable in
-			self.base.captureStillImageBracketAsynchronously(from: connection, withSettingsArray: settings) { (sampleBuffer, imageSettings, error) in
+		Single.create { event in
+			base.captureStillImageBracketAsynchronously(from: connection, withSettingsArray: settings) { sampleBuffer, imageSettings, error in
 				if let error = error {
 					event(.error(error))
 				} else {

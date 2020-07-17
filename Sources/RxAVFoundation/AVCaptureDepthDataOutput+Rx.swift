@@ -15,7 +15,7 @@ extension AVCaptureDepthDataOutput: HasDelegate {
 
 	public var delegate: Delegate? {
 		get {
-			return value(forKey: "delegate") as? Delegate
+			value(forKey: "delegate") as? Delegate
 		}
 		set(newValue) {
 			setDelegate(newValue, callbackQueue: .main)
@@ -44,18 +44,20 @@ private class RxAVCaptureDataOutputSynchronizerDelegateProxy: DelegateProxy<AVCa
 extension Reactive where Base: AVCaptureDepthDataOutput {
 
 	public var delegate: DelegateProxy<AVCaptureDepthDataOutput, AVCaptureDepthDataOutputDelegate> {
-		return RxAVCaptureDataOutputSynchronizerDelegateProxy.proxy(for: base)
+		RxAVCaptureDataOutputSynchronizerDelegateProxy.proxy(for: base)
 	}
 
 	/// Called whenever an AVCaptureDepthDataOutput instance outputs a new depth data object.
 	public var didOutputDepthData: Observable<(AVDepthData, CMTime, AVCaptureConnection)> {
-		return delegate.methodInvoked(#selector(AVCaptureDepthDataOutputDelegate.depthDataOutput(_:didOutput:timestamp:connection:)))
+		delegate
+			.methodInvoked(#selector(AVCaptureDepthDataOutputDelegate.depthDataOutput(_:didOutput:timestamp:connection:)))
 			.map { ($0[1] as! AVDepthData, $0[2] as! CMTime, $0[3] as! AVCaptureConnection) }
 	}
 
 	/// Called once for each depth data that is discarded.
 	public var didDropDepthData: Observable<(AVDepthData, CMTime, AVCaptureConnection, AVCaptureOutput.DataDroppedReason)> {
-		return delegate.methodInvoked(#selector(AVCaptureDepthDataOutputDelegate.depthDataOutput(_:didOutput:timestamp:connection:)))
+		delegate
+			.methodInvoked(#selector(AVCaptureDepthDataOutputDelegate.depthDataOutput(_:didOutput:timestamp:connection:)))
 			.map { ($0[1] as! AVDepthData, $0[2] as! CMTime, $0[3] as! AVCaptureConnection, $0[4] as! AVCaptureOutput.DataDroppedReason) }
 	}
 }

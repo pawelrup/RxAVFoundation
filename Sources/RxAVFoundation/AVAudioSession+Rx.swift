@@ -18,7 +18,7 @@ extension Reactive where Base: AVAudioSession {
 	// MARK: - Notifications
 
 	public var routeChange: Observable<AVAudioSessionRouteChangeInfo> {
-		return NotificationCenter.default.rx.notification(AVAudioSession.routeChangeNotification, object: base)
+		NotificationCenter.default.rx.notification(AVAudioSession.routeChangeNotification, object: base)
 			.map { $0.userInfo }
 			.map {
 				let reasonRaw = $0?[AVAudioSessionRouteChangeReasonKey] as? UInt
@@ -41,8 +41,8 @@ extension Reactive where Base: AVAudioSession {
 	#if os(iOS) || os(watchOS)
 	/// Requests the user’s permission for audio recording.
 	public func requestRecordPermission() -> Single<Bool> {
-		return Single.create { event -> Disposable in
-			self.base.requestRecordPermission { (granted) in
+		Single.create { event in
+			base.requestRecordPermission { granted in
 				event(.success(granted))
 			}
 			return Disposables.create()

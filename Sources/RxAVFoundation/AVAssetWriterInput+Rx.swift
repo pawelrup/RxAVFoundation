@@ -15,8 +15,8 @@ extension Reactive where Base: AVAssetWriterInput {
 	/// Instructs the receiver to invoke a block repeatedly, at its convenience, to gather media data for writing to the output.
 	/// - Parameter queue: The queue on which block should be invoked.
 	public func requestMediaDataWhenReady(on queue: DispatchQueue) -> Single<Void> {
-		return Single.create { event -> Disposable in
-			self.base.requestMediaDataWhenReady(on: queue) {
+		Single.create { event in
+			base.requestMediaDataWhenReady(on: queue) {
 				event(.success(()))
 			}
 			return Disposables.create()
@@ -27,7 +27,7 @@ extension Reactive where Base: AVAssetWriterInput {
 	/// - Parameter queue: The queue on which the block should be invoked.
 	public func respondToEachPassDescription(on queue: DispatchQueue) -> Single<Void> {
 		return Single.create { event -> Disposable in
-			self.base.respondToEachPassDescription(on: queue) {
+			base.respondToEachPassDescription(on: queue) {
 				event(.success(()))
 			}
 			return Disposables.create()

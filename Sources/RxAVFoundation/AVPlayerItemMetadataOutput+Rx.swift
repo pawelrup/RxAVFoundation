@@ -40,11 +40,12 @@ private class RxAVPlayerItemMetadataOutputDelegateProxy: DelegateProxy<AVPlayerI
 extension Reactive where Base: AVPlayerItemMetadataOutput {
 
 	public var delegate: DelegateProxy<AVPlayerItemMetadataOutput, AVPlayerItemMetadataOutputPushDelegate> {
-		return RxAVPlayerItemMetadataOutputDelegateProxy.proxy(for: base)
+		RxAVPlayerItemMetadataOutputDelegateProxy.proxy(for: base)
 	}
 
 	public var outputMediaDataWillChange: Observable<([AVTimedMetadataGroup], AVPlayerItemTrack?)> {
-		return delegate.methodInvoked(#selector(AVPlayerItemMetadataOutputPushDelegate.metadataOutput(_:didOutputTimedMetadataGroups:from:)))
+		delegate
+			.methodInvoked(#selector(AVPlayerItemMetadataOutputPushDelegate.metadataOutput(_:didOutputTimedMetadataGroups:from:)))
 			.map { ($0[1] as! [AVTimedMetadataGroup], $0[2] as? AVPlayerItemTrack) }
 	}
 }

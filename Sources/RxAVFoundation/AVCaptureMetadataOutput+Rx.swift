@@ -41,12 +41,13 @@ private class RxAVCaptureMetadataOutputDelegateProxy: DelegateProxy<AVCaptureMet
 extension Reactive where Base: AVCaptureMetadataOutput {
 
 	public var delegate: DelegateProxy<AVCaptureMetadataOutput, AVCaptureMetadataOutputObjectsDelegate> {
-		return RxAVCaptureMetadataOutputDelegateProxy.proxy(for: base)
+		RxAVCaptureMetadataOutputDelegateProxy.proxy(for: base)
 	}
 
 	/// Informs the delegate that the capture output object emitted new metadata objects.
 	public var didOutputMetadataObjects: Observable<([AVMetadataObject], AVCaptureConnection)> {
-		return delegate.methodInvoked(#selector(AVCaptureMetadataOutputObjectsDelegate.metadataOutput(_:didOutput:from:)))
+		delegate
+			.methodInvoked(#selector(AVCaptureMetadataOutputObjectsDelegate.metadataOutput(_:didOutput:from:)))
 			.map { ($0[1] as! [AVMetadataObject], $0[2] as! AVCaptureConnection) }
 	}
 }

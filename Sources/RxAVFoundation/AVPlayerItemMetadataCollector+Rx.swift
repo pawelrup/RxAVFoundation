@@ -52,11 +52,11 @@ private class RxAVPlayerItemMetadataCollectorDelegateProxy: DelegateProxy<AVPlay
 extension Reactive where Base: AVPlayerItemMetadataCollector {
 
 	public var delegate: DelegateProxy<AVPlayerItemMetadataCollector, AVPlayerItemMetadataCollectorPushDelegate> {
-		return RxAVPlayerItemMetadataCollectorDelegateProxy.proxy(for: base)
+		RxAVPlayerItemMetadataCollectorDelegateProxy.proxy(for: base)
 	}
 
 	/// Tells that the collected metadata group information has changed and needs to be updated.
 	public var didCollectMetadataGroups: Observable<([AVDateRangeMetadataGroup], IndexSet, IndexSet)> {
-		return (delegate as! RxAVPlayerItemMetadataCollectorDelegateProxy).didCollectMetadataGroups
+		(delegate as! RxAVPlayerItemMetadataCollectorDelegateProxy).didCollectMetadataGroups
 	}
 }
